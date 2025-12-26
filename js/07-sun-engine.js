@@ -38,21 +38,35 @@ function updateTodayInfo(){
   const t = new Date();
   const b = getBangla(t);
 
-  document.getElementById("todayDate").innerText =
+  const todayEl = document.getElementById("todayDate");
+  const banglaEl = document.getElementById("banglaYear");
+  const sunriseEl = document.getElementById("sunrise");
+  const sunsetEl = document.getElementById("sunset");
+
+  if(!todayEl) return;
+
+  // 🔹 English date
+  todayEl.innerText =
     t.toLocaleDateString("en-IN",{
       weekday:"long",
       day:"numeric",
       month:"long",
       year:"numeric"
     });
-    
-    
-if(b){
-  document.getElementById("banglaYear").innerText =
-    `বাংলা সাল: ${b.year}`;
-}
 
+  // 🔹 Bangla date (দিন + মাস + সাল)
+  if(b && banglaEl){
+    banglaEl.innerText = `বাংলা: ${b.day} ${b.month} ${b.year}`;
+  }
+
+  // 🔹 Sunrise / Sunset
   const s = getSunMoonTime(t);
-  sunrise.innerText = s.sunrise;
-  sunset.innerText = s.sunset;
+  if(sunriseEl) sunriseEl.innerText = s.sunrise;
+  if(sunsetEl)  sunsetEl.innerText  = s.sunset;
+}
+// 🔒 FORCE HEADER LOAD (GUARANTEE)
+try{
+  updateTodayInfo();
+}catch(e){
+  console.error("Header load error:", e);
 }

@@ -1,11 +1,15 @@
 /* ================= GLOBAL ================= */
 
-//let cur = new Date();
+// let cur = new Date();
 
 /* ================= HELPERS ================= */
 
 function iso(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function getTithiInfo(date){
+  return window.TITHI_DATA?.[iso(date)] || null;
 }
 
 /* ================= RENDER ================= */
@@ -38,13 +42,24 @@ function render(){
     const div = document.createElement("div");
     div.className = "day";
 
+    /* ---- Weekday ---- */
     const wd = date.getDay();
     if(wd === 0) div.classList.add("sun");
     if(wd === 6) div.classList.add("sat");
 
-    if(b.day === 15) div.classList.add("purnima");
-    if(b.day >= 29) div.classList.add("amavasya");
+    /* ---- Tithi (JSON FIRST, Bangla fallback) ---- */
+    const tithi = getTithiInfo(date);
 
+    if(tithi){
+      if(tithi.type === "পূর্ণিমা") div.classList.add("purnima");
+      if(tithi.type === "অমাবস্যা") div.classList.add("amavasya");
+    }else{
+      // fallback visual (approx only)
+      if(b.day === 15) div.classList.add("purnima");
+      if(b.day >= 29) div.classList.add("amavasya");
+    }
+
+    /* ---- Today ---- */
     if(
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
@@ -53,23 +68,21 @@ function render(){
       div.classList.add("today");
     }
 
+    /* ---- Cell HTML ---- */
     div.innerHTML = `
-  <strong>${d}</strong>
+      <strong>${d}</strong>
 
-  <!-- English Month -->
-  <small class="engMonth">${MONTHS[date.getMonth()]}</small>
+      <small class="engMonth">${MONTHS[date.getMonth()]}</small>
+      <small class="banMonth">${b.day} ${b.month}</small>
 
-  <!-- Bangla Day + Month -->
-  <small class="banMonth">${b.day} ${b.month}</small>
+      ${tithi?.type === "পূর্ণিমা" ? `<span class="moonIcon">🌕</span>` : ""}
+      ${tithi?.type === "অমাবস্যা" ? `<span class="moonIcon">🌑</span>` : ""}
 
-  ${b.day === 15 ? `<span class="moonIcon">🌕</span>` : ""}
-  ${b.day >= 29 ? `<span class="moonIcon">🌑</span>` : ""}
-
-  ${FESTIVALS[iso(date)]
-    ? `<div class="festText">${FESTIVALS[iso(date)]}</div>`
-    : ""
-  }
-`;
+      ${FESTIVALS[iso(date)]
+        ? `<div class="festText">${FESTIVALS[iso(date)]}</div>`
+        : ""
+      }
+    `;
 
     div.addEventListener("click", () => openPopup(date, b));
     calendar.appendChild(div);
@@ -84,24 +97,16 @@ function render(){
   /* ===== Sync English Select ===== */
   const ySel = document.getElementById("yearSelect");
   const mSel = document.getElementById("monthSelect");
-
   if(ySel) ySel.value = year;
   if(mSel) mSel.value = month;
 
   /* ===== Bangla Month Sync ===== */
   const bmSel = document.getElementById("banglaMonthSelect");
   if(bmSel){
-
-    let refDate;
-
-    if(
-      year === today.getFullYear() &&
-      month === today.getMonth()
-    ){
-      refDate = today;
-    }else{
-      refDate = new Date(year, month, 15);
-    }
+    const refDate =
+      (year === today.getFullYear() && month === today.getMonth())
+        ? today
+        : new Date(year, month, 15);
 
     const bRef = getBangla(refDate);
     if(bRef){
@@ -110,11 +115,47 @@ function render(){
     }
   }
 
-  /* 🔥 VERY IMPORTANT */
   renderFestivalList();
 }
 
-/* ================= MONTH FESTIVAL LIST ================= */
+/* ================= POPUP ================= */
+
+const popup = document.getElementById("popup");
+
+function openPopup(date, b){
+
+  if(!popup) return;
+
+  const sm = getSunMoonTime(date);
+  const tithi = getTithiInfo(date);
+
+  document.getElementById("p-title").innerText = date.toDateString();
+
+  document.getElementById("p-eng").innerText =
+    `English: ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+
+  document.getElementById("p-ban").innerText =
+    `বাংলা: ${b.day} ${b.month} ${b.year}`;
+
+  if(tithi){
+    document.getElementById("p-tithi").innerText =
+`🌙 ${tithi.type}
+শুরু: ${tithi.start}
+শেষ: ${tithi.end}
+📜 ${tithi.source}`;
+  }else{
+    document.getElementById("p-tithi").innerText = "তিথি: —";
+  }
+
+  document.getElementById("p-sun").innerText =
+`🌅 Sunrise: ${sm.sunrise}   🌇 Sunset: ${sm.sunset}
+🌙 Moonrise: ${sm.moonrise}   🌑 Moonset: ${sm.moonset}`;
+
+  document.getElementById("p-fest").innerText =
+    FESTIVALS[iso(date)] ? "উৎসব: " + FESTIVALS[iso(date)] : "";
+
+  popup.style.display = "flex";
+}
 
 function renderFestivalList(){
 
@@ -164,66 +205,7 @@ function renderFestivalList(){
   }
 }
 
-/* ================= POPUP ================= */
-
-const popup = document.getElementById("popup");
-
-function openPopup(date, b){
-
-  if(!popup) return;
-
-  const sm = getSunMoonTime(date);
-
-  document.getElementById("p-title").innerText =
-    date.toDateString();
-
-  document.getElementById("p-eng").innerText =
-    `English: ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-
-  document.getElementById("p-ban").innerText =
-    `বাংলা: ${b.day} ${b.month} ${b.year}`;
-
-  document.getElementById("p-tithi").innerText =
-    "তিথি: " +
-    (b.day === 15 ? "পূর্ণিমা" :
-     b.day >= 29 ? "অমাবস্যা" : "—");
-
-  document.getElementById("p-sun").innerText =
-    `🌅 Sunrise: ${sm.sunrise}   🌇 Sunset: ${sm.sunset}
-🌙 Moonrise: ${sm.moonrise}   🌑 Moonset: ${sm.moonset}`;
-
-  document.getElementById("p-fest").innerText =
-    FESTIVALS[iso(date)]
-      ? "উৎসব: " + FESTIVALS[iso(date)]
-      : "";
-
-  popup.style.display = "flex";
-}
 
 function closePopup(){
   if(popup) popup.style.display = "none";
-}
-
-/* ================= POPUP SWIPE CLOSE ================= */
-
-let popStartY = 0;
-let popCurrentY = 0;
-
-if(popup){
-  popup.addEventListener("touchstart", e=>{
-    popStartY = e.touches[0].clientY;
-  },{passive:true});
-
-  popup.addEventListener("touchmove", e=>{
-    popCurrentY = e.touches[0].clientY;
-  },{passive:true});
-
-  popup.addEventListener("touchend", ()=>{
-    if(popCurrentY - popStartY > 80){
-      closePopup();
-    }
-    popStartY = popCurrentY = 0;
-  });
-  
-  
 }

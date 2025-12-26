@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMonthDropdown();
   setupBanglaMonthDropdown();
   render();
-  updateTodayInfo();
+updateTodayInfo();
+renderFestivalList(); // 🔥 FORCE CALL
 });
 
 /* ================= STABLE SWIPE MONTH CHANGE ================= */
