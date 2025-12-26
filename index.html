@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📅 বাংলা ক্যালেন্ডার</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#020617">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="selects">
+      <select id="yearSelect"></select>
+      <select id="monthSelect"></select>
+      <select id="banglaMonthSelect"disabled></select>
+      <select id="locationSelect">
+        <option value="24.8333,92.7789">Silchar</option>
+        <option value="26.1445,91.7362">Guwahati</option>
+        <option value="22.5726,88.3639">Kolkata</option>
+        <option value="23.8103,90.4125">Dhaka</option>
+      </select>
+    </div>
+
+    <div id="todayBox">
+      <div id="todayDate">Loading...</div>
+      <div id="sunTime">
+        🌅 <span id="sunrise">--</span>
+        &nbsp;&nbsp;
+        🌇 <span id="sunset">--</span>
+      </div>
+      <div id="banglaYear"></div>
+    </div>
+  </header>
+
+  <!-- WEEKDAYS -->
+  <!-- WEEK + CALENDAR SCROLL -->
+<div id="calWrap">
+
+  <div id="weekdays">
+    <div>Sun</div><div>Mon</div><div>Tue</div>
+    <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+  </div>
+
+  <div id="calendar"></div>
+  
+
+</div>
+<div class="navMonth">
+  <button id="prevM">◀</button>
+  <span id="curLabel"></span>
+  <button id="nextM">▶</button>
+</div>
+
+  <!-- CALENDAR (SWIPE AREA) -->
+  <!--
+ 
+<div id="calendar"></div>
+-->
+<button id="jumpToday">📍 Today</button>
+
+<div id="festivalList"></div>
+
+<!-- POPUP -->
+<div id="popup">
+  <div class="popup-card">
+    <h3 id="p-title"></h3>
+    <p id="p-eng"></p>
+    <p id="p-ban"></p>
+    <p id="p-tithi"></p>
+    <p id="p-sun"></p>
+    <p id="p-fest"></p>
+    <button onclick="closePopup()">বন্ধ করুন</button>
+  </div>
+</div>
+<script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+<!-- JS -->
+<script src="js/02-constants.js"></script>
+<script src="js/03-assam-data.js"></script>
+<script src="js/05-date-utils.js"></script>
+<script src="js/06-bangla-engine.js"></script>
+<script src="js/07-sun-engine.js"></script>
+<script src="js/08-ui-dropdowns.js"></script>
+<script src="js/09-calendar-render.js"></script>
+<script src="js/10-app-init.js"></script>
+
+</body>
+</html>
