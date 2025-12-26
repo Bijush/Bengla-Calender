@@ -133,13 +133,34 @@ function renderFestivalList(){
     });
 
   if(items.length){
-    fBox.innerHTML = `<h4>📌 এই মাসের উৎসব</h4>`;
+
+    // 🔹 Header: Month + Year
+    const monthName = MONTHS[m];
+    fBox.innerHTML = `
+      <h4>📌 ${monthName} ${y} – এই মাসের উৎসব</h4>
+    `;
+
+    // 🔹 Festival list
     items.forEach(d=>{
-      const dd = d.split("-")[2];
-      fBox.innerHTML += `<div>• ${dd} – ${FESTIVALS[d]}</div>`;
+      const dt = new Date(d);
+      const day = dt.getDate();
+      const engMonth = MONTHS[dt.getMonth()];
+
+      // Bangla month (optional but nice)
+      const b = getBangla(dt);
+      const banglaMonth = b ? ` (${b.month})` : "";
+
+      fBox.innerHTML += `
+        <div>• ${day} ${engMonth}${banglaMonth} – ${FESTIVALS[d]}</div>
+      `;
     });
+
   }else{
-    fBox.innerHTML = `<div style="opacity:.6">এই মাসে কোনো উৎসব নেই</div>`;
+    fBox.innerHTML = `
+      <div style="opacity:.6">
+        ${MONTHS[m]} ${y} – এই মাসে কোনো উৎসব নেই
+      </div>
+    `;
   }
 }
 
