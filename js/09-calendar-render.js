@@ -69,21 +69,28 @@ function render(){
     }
 
     /* ---- Cell HTML ---- */
-    div.innerHTML = `
-      <strong>${d}</strong>
+    
+div.innerHTML = `
+  <div class="dateSwap">
+    <span class="dateNum">${d}</span>
+    ${
+      (tithi?.type === "পূর্ণিমা" || (!tithi && b.day === 15))
+        ? `<span class="moonSwap">🌕</span>` : ""
+    }
+    ${
+      (tithi?.type === "অমাবস্যা" || (!tithi && b.day >= 29))
+        ? `<span class="moonSwap">🌑</span>` : ""
+    }
+  </div>
 
-      <small class="engMonth">${MONTHS[date.getMonth()]}</small>
-      <small class="banMonth">${b.day} ${b.month}</small>
+  <small class="engMonth">${MONTHS[date.getMonth()]}</small>
+  <small class="banMonth">${b.day} ${b.month}</small>
 
-      ${tithi?.type === "পূর্ণিমা" ? `<span class="moonIcon">🌕</span>` : ""}
-      ${tithi?.type === "অমাবস্যা" ? `<span class="moonIcon">🌑</span>` : ""}
-
-      ${FESTIVALS[iso(date)]
-        ? `<div class="festText">${FESTIVALS[iso(date)]}</div>`
-        : ""
-      }
-    `;
-
+  ${FESTIVALS[iso(date)]
+    ? `<div class="festText marquee"><span>${FESTIVALS[iso(date)]}</span></div>`
+    : ""
+  }
+`;
     div.addEventListener("click", () => openPopup(date, b));
     calendar.appendChild(div);
   }
