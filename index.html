@@ -29,13 +29,14 @@
     </div>
 
     <div id="todayBox">
-      <div id="todayDate">Loading...</div>
+      <div id="todayDate">__</div>
+      <div id="banglaYear"></div>
       <div id="sunTime">
         🌅 <span id="sunrise">--</span>
         &nbsp;&nbsp;
         🌇 <span id="sunset">--</span>
       </div>
-      <div id="banglaYear"></div>
+      
     </div>
   </header>
 
@@ -86,9 +87,27 @@
 <script src="js/05-date-utils.js"></script>
 <script src="js/06-bangla-engine.js"></script>
 <script src="js/07-sun-engine.js"></script>
+<script src="js/11-tithi-data.js"></script>
 <script src="js/08-ui-dropdowns.js"></script>
 <script src="js/09-calendar-render.js"></script>
 <script src="js/10-app-init.js"></script>
 
+
+<!--
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => {
+        console.log("✅ Service Worker registered:", reg.scope);
+      })
+      .catch(err => {
+        console.error("❌ Service Worker failed:", err);
+      });
+  });
+}
+</script>
+-->
 </body>
 </html>
